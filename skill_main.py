@@ -16,9 +16,7 @@ users_db = {}
 
 @app.route('/')
 def main():
-    return 'Тест'
-
-
+    return 'Тест3'
 
 def make_response(text, end_session=False, buttons=None):
     """Создать ответ для Алисы"""
@@ -84,6 +82,10 @@ def check_answer(word: str, ans: str) -> bool:
         return False
 
 
+def wait_answer():
+    return make_response("Формируется ответ...", end_session=False)
+
+
 @app.route('/alice', methods=['POST'])
 def alice_webhook():
 
@@ -105,6 +107,7 @@ def alice_webhook():
         if user['level_tested']:
             return make_response("Привет! Чем хочешь заняться?", end_session=False)
         else:
+            wait_answer()
             user['total_questions'] = 0
             user['correct_answers'] = 0
             word = make_word("qualification", False)
@@ -121,7 +124,7 @@ def alice_webhook():
 
     # Если пользователь проходит тест уровня
     if not user['level_tested'] and user['total_questions'] > 0:
-
+        wait_answer()
         word = make_word(user["last_word"], user["last_cond"])
         user['current_word'] = word
         user["last_word"] = word
